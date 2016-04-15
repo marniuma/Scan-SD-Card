@@ -18,7 +18,6 @@ import java.util.Set;
 public class ScanIntentService extends IntentService {
 
 
-
     public static final String TOP10 = "topFileSize10";
     public static final String AVERAGE = "averageSize";
     public static final String FREQUENTEXT = "extFrequent5";
@@ -26,7 +25,7 @@ public class ScanIntentService extends IntentService {
 
     private final String state = Environment.getExternalStorageState();
 
-    Map<String,Integer> files = new HashMap<String, Integer>();
+    Map<String, Integer> files = new HashMap<String, Integer>();
     Map<String, Double> nameSize = new HashMap<String, Double>();
     Map<String, Double> sorted_nameSize = new HashMap<String, Double>( );
     Map<String, Integer> mostFrequent = new HashMap<String, Integer>( );
@@ -68,6 +67,45 @@ public class ScanIntentService extends IntentService {
 
 
 
+//    public void scanSDCard(File dir) {
+//
+//        String extension = "";
+//
+//        File[] listFile = dir.listFiles();
+//
+//        if (listFile != null) {
+//            for (int i = 0; i < listFile.length; i++) {
+//
+//                if (listFile[i].isDirectory()) {
+//                    scanSDCard(listFile[i]);
+//                } else {
+//
+//                    fileCount++;
+//                    int in = listFile[i].getName().lastIndexOf('.');
+//                    String name = listFile[i].getName();
+//                    double size = listFile[i].length()/(1024);
+//                    nameSize.put(name,size);
+//                    if (in >= 0 && name.length() > in+1) {
+//                        try {
+//                            extension = name.substring(i + 1); //get extension type
+//                        } catch (IndexOutOfBoundsException e) {
+//                            System.out.println(name);
+//                        }
+//
+//                        if(!files.containsKey(extension)) {
+//                            files.put(extension,1);
+//                        } else {
+//                            Integer te = files.get(extension);
+//                            files.put(extension, te+1);
+//                        }
+//
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+
     public void scanSDCard(File dir) {
         //String pdfPattern = ".pdf";
 
@@ -81,25 +119,25 @@ public class ScanIntentService extends IntentService {
 
                 if (listFile[i].isDirectory()) {
                     scanSDCard(listFile[i]);
-                } else {
-
+                } else if (listFile[i].isFile()) {
                     fileCount++;
                     int in = listFile[i].getName().lastIndexOf('.');
                     String name = listFile[i].getName();
-                    double size = listFile[i].length()/(1024);
-                    nameSize.put(name,size);
-                    if (in >= 0 && name.length() > in+1) {
+                    double size = listFile[i].length() / (1024);
+                    nameSize.put(name, size);
+                    if (in >= 0 && name.length() > in + 1) {
                         try {
-                            extension = name.substring(i + 1); //get extension type
+                            //extension = name.substring(i + 1); //get extension type
+                            extension = name.substring(in + 1);
+                            if (!files.containsKey(extension)) {
+                                files.put(extension, 1);
+                            } else {
+                                Integer te = files.get(extension);
+                                files.put(extension, te + 1);
+                            }
                         } catch (IndexOutOfBoundsException e) {
                             System.out.println(name);
-                        }
-
-                        if(!files.containsKey(extension)) {
-                            files.put(extension,1);
-                        } else {
-                            Integer te = files.get(extension);
-                            files.put(extension, te+1);
+                            fileCount--;
                         }
 
                     }
